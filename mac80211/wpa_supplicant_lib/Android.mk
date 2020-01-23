@@ -22,7 +22,7 @@ ifneq ($(BOARD_WPA_SUPPLICANT_DRIVER),)
   CONFIG_DRIVER_$(BOARD_WPA_SUPPLICANT_DRIVER) := y
 endif
 
-L_CFLAGS = -DCONFIG_DRIVER_CUSTOM -DWPA_SUPPLICANT_$(WPA_SUPPLICANT_VERSION)
+L_CFLAGS = -DCONFIG_DRIVER_CUSTOM -DWPA_SUPPLICANT_$(WPA_SUPPLICANT_VERSION) -Wno-unused-parameter
 L_SRC :=
 
 ifdef CONFIG_NO_STDOUT_DEBUG
@@ -55,24 +55,25 @@ endif
 
 INCLUDES = $(WPA_SUPPL_DIR) \
     $(WPA_SUPPL_DIR)/src \
+    $(WPA_SUPPL_DIR)/src/drivers \
     $(WPA_SUPPL_DIR)/src/common \
     $(WPA_SUPPL_DIR)/src/drivers \
     $(WPA_SUPPL_DIR)/src/l2_packet \
     $(WPA_SUPPL_DIR)/src/utils \
-    $(WPA_SUPPL_DIR)/src/wps
+    $(WPA_SUPPL_DIR)/src/wps \
+    external/libnl-headers
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := lib_driver_cmd_wl12xx
 LOCAL_MODULE_TAGS := eng
 LOCAL_SHARED_LIBRARIES := libc libcutils
 ifneq ($(wildcard external/libnl),)
-INCLUDES += external/libnl/include
 LOCAL_SHARED_LIBRARIES += libnl
 else
-INCLUDES += external/libnl-headers
 LOCAL_STATIC_LIBRARIES := libnl_2
 endif
 LOCAL_CFLAGS := $(L_CFLAGS)
 LOCAL_SRC_FILES := $(L_SRC)
 LOCAL_C_INCLUDES := $(INCLUDES)
+LOCAL_VENDOR_MODULE := true
 include $(BUILD_STATIC_LIBRARY)

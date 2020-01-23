@@ -12,6 +12,10 @@
 #include <netlink/msg.h>
 #include <netlink/attr.h>
 
+// un-define __bitwise because the macro is re-defined in another
+// header file (external/wpa_supplicant_8/wpa_supplicant/src/utils/common.h)
+#undef __bitwise
+
 #include "linux_wext.h"
 #include "common.h"
 #include "driver.h"
@@ -33,6 +37,9 @@
 #define BLUETOOTH_COEXISTENCE_MODE_DISABLED  1
 #define BLUETOOTH_COEXISTENCE_MODE_SENSE     2
 
+// this global variable and function are not used - un-define
+// them to prevent a compiler warning/error
+#if 0
 static int g_drv_errors = 0;
 
 static void wpa_driver_send_hang_msg(struct wpa_driver_nl80211_data *drv)
@@ -43,6 +50,7 @@ static void wpa_driver_send_hang_msg(struct wpa_driver_nl80211_data *drv)
 		wpa_msg(drv->ctx, MSG_INFO, WPA_EVENT_DRIVER_STATE "HANGED");
 	}
 }
+#endif
 
 static int wpa_driver_toggle_btcoex_state(char state)
 {
@@ -64,7 +72,6 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
 {
 	struct i802_bss *bss = priv;
 	struct wpa_driver_nl80211_data *drv = bss->drv;
-	struct ifreq ifr;
 	int ret = 0;
 
 	if (os_strcasecmp(cmd, "STOP") == 0) {
